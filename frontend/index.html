@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SentinelAI - Security Operations Center</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#080b12;color:#e8edf7}
+.header{height:70px;background:#0d111b;border-bottom:1px solid #202838;display:flex;align-items:center;justify-content:space-between;padding:0 30px}
+.logo{font-size:23px;font-weight:700}.logo span{color:#39d98a}
+.status{color:#39d98a;font-size:14px}
+.layout{display:flex;min-height:calc(100vh - 70px)}
+.sidebar{width:220px;background:#0b0f17;border-right:1px solid #202838;padding:25px 15px}
+.nav{padding:13px 15px;margin-bottom:8px;border-radius:8px;color:#9ca8bb}
+.nav.active{background:#17221e;color:#39d98a}
+.main{flex:1;padding:28px;overflow:auto}
+.title{font-size:27px;font-weight:650}
+.subtitle{color:#7f8ba0;margin-top:7px;margin-bottom:25px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:#0e141f;border:1px solid #202838;border-radius:12px;padding:20px}
+.card-label{color:#8490a5;font-size:13px}
+.card-value{font-size:30px;font-weight:700;margin-top:9px}
+.green{color:#39d98a}.red{color:#ff5c70}.yellow{color:#f5c451}
+.section{margin-top:25px;background:#0e141f;border:1px solid #202838;border-radius:12px;padding:22px}
+.section-header{display:flex;justify-content:space-between;margin-bottom:18px}
+.section-title{font-size:17px;font-weight:600}
+button{background:#39d98a;border:none;color:#07100b;padding:9px 15px;border-radius:7px;font-weight:600;cursor:pointer}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:14px 10px;border-bottom:1px solid #202838;font-size:13px}
+th{color:#778399;font-weight:500}
+.badge{padding:5px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.low{background:#123321;color:#39d98a}
+.medium{background:#332b13;color:#f5c451}
+.high{background:#391923;color:#ff6b7c}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.factor{margin:13px 0}
+.factor-top{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px}
+.bar{height:7px;background:#202838;border-radius:10px;overflow:hidden}
+.bar-inner{height:100%;background:#39d98a;border-radius:10px}
+.graph{height:230px;position:relative;background:#090e16;border-radius:9px;border:1px solid #1d2635}
+.node{position:absolute;background:#111b28;border:1px solid #39d98a;padding:12px 18px;border-radius:9px;text-align:center;font-size:12px}
+.node small{display:block;color:#778399;margin-top:4px}
+.node1{left:8%;top:42%}.node2{left:43%;top:20%}.node3{right:8%;top:55%}
+.line{position:absolute;height:1px;background:#39d98a;transform-origin:left center}
+.line1{width:190px;left:23%;top:47%;transform:rotate(-17deg)}
+.line2{width:180px;left:58%;top:38%;transform:rotate(22deg)}
+@media(max-width:900px){.sidebar{display:none}.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:600px){.cards{grid-template-columns:1fr}.main{padding:15px}}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+<div class="logo">◈ Sentinel<span>AI</span></div>
+<div class="status">● SYSTEM ONLINE</div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+<div class="nav active">Dashboard</div>
+<div class="nav">Incidents</div>
+<div class="nav">Threat Detection</div>
+<div class="nav">Anomaly Detection</div>
+<div class="nav">Threat Graph</div>
+<div class="nav">AI Investigation</div>
+</aside>
+
+<main class="main">
+
+<h1 class="title">Security Operations Center</h1>
+<p class="subtitle">AI-powered network threat detection and investigation</p>
+
+<div class="cards">
+
+<div class="card">
+<div class="card-label">Total Incidents</div>
+<div class="card-value" id="total">--</div>
+</div>
+
+<div class="card">
+<div class="card-label">Threats Detected</div>
+<div class="card-value red" id="threats">--</div>
+</div>
+
+<div class="card">
+<div class="card-label">Anomalies</div>
+<div class="card-value yellow" id="anomalies">--</div>
+</div>
+
+<div class="card">
+<div class="card-label">System Status</div>
+<div class="card-value green">ONLINE</div>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-header">
+<div class="section-title">Recent Security Incidents</div>
+<button onclick="loadIncidents()">Refresh</button>
+</div>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Source</th>
+<th>Destination</th>
+<th>Port</th>
+<th>Prediction</th>
+<th>Anomaly</th>
+<th>Risk</th>
+<th>Severity</th>
+</tr>
+</thead>
+
+<tbody id="incidentTable">
+<tr>
+<td colspan="8">Loading incidents...</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="grid">
+
+<div class="section">
+
+<div class="section-title">AI Risk Factors</div>
+
+<div class="factor">
+<div class="factor-top"><span>Destination Port</span><span>High</span></div>
+<div class="bar"><div class="bar-inner" style="width:72%"></div></div>
+</div>
+
+<div class="factor">
+<div class="factor-top"><span>Flow Duration</span><span>Medium</span></div>
+<div class="bar"><div class="bar-inner" style="width:52%"></div></div>
+</div>
+
+<div class="factor">
+<div class="factor-top"><span>Packet Length</span><span>Medium</span></div>
+<div class="bar"><div class="bar-inner" style="width:44%"></div></div>
+</div>
+
+<div class="factor">
+<div class="factor-top"><span>Header Length</span><span>Low</span></div>
+<div class="bar"><div class="bar-inner" style="width:30%"></div></div>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">Threat Relationship Graph</div>
+
+<div class="graph">
+
+<div class="line line1"></div>
+<div class="line line2"></div>
+
+<div class="node node1">
+192.168.1.20
+<small>Source</small>
+</div>
+
+<div class="node node2">
+10.0.0.8
+<small>Destination</small>
+</div>
+
+<div class="node node3">
+Port 443
+<small>Network Service</small>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">AI Investigation Engine</div>
+
+<div style="margin-top:15px;color:#9ca8bb;line-height:1.7">
+<b style="color:#39d98a">✓ Investigation Active</b>
+<br>
+SentinelAI combines ML prediction, anomaly detection,
+explainability and risk scoring to prioritize security incidents.
+</div>
+
+</div>
+
+</main>
+</div>
+
+<script>
+
+async function loadIncidents(){
+
+try{
+
+const response=await fetch("http://localhost:8000/incidents");
+const data=await response.json(); const incidents=data.incidents;
+
+document.getElementById("total").textContent=incidents.length;
+
+document.getElementById("threats").textContent=
+incidents.filter(x=>x.prediction==="ATTACK").length;
+
+document.getElementById("anomalies").textContent=
+incidents.filter(x=>x.anomaly==="ANOMALOUS").length;
+
+const table=document.getElementById("incidentTable");
+table.innerHTML="";
+
+incidents.slice().reverse().forEach(incident=>{
+
+const severity=(incident.severity||"LOW").toLowerCase();
+
+table.innerHTML+=`
+<tr>
+<td>#${incident.id}</td>
+<td>${incident.source_ip}</td>
+<td>${incident.destination_ip}</td>
+<td>${incident.destination_port}</td>
+<td>${incident.prediction}</td>
+<td>${incident.anomaly}</td>
+<td>${incident.risk_score}</td>
+<td><span class="badge ${severity}">${incident.severity}</span></td>
+</tr>
+`;
+
+});
+
+}catch(error){
+
+document.getElementById("incidentTable").innerHTML=`
+<tr>
+<td colspan="8">
+Backend connection failed. Make sure SentinelAI API is running.
+</td>
+</tr>
+`;
+
+}
+
+}
+
+loadIncidents();
+
+</script>
+
+</body>
+</html>
