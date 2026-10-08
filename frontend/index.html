@@ -207,7 +207,7 @@ async function loadIncidents(){
 
 try{
 
-const response=await fetch("http://localhost:8000/incidents");
+const response=await fetch("https://sentinelai-sw28.onrender.com/incidents");
 const data=await response.json(); const incidents=data.incidents;
 
 document.getElementById("total").textContent=incidents.length;
